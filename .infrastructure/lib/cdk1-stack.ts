@@ -8,7 +8,7 @@ import { Function } from 'aws-cdk-lib/aws-lambda';
 import { HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
-import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+// import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 function envVar(name: string, fallback?: string): string {
@@ -35,7 +35,7 @@ export default class Cdk1Stack extends cdk.Stack {
     // A bucket to hold zip files for Lambda functions
     // This is useful because updating a Lambda function in the infrastructure might set the Lambda code to a default placeholder.
     // Having a bucket to store the code in means we can update the Lambda function to use the code, either here in the infrastructure build, or from the Github Actions build.
-    const builds = new BuildsBucket(this)
+    const builds = new BuildsBucket(this);
 
     // An optional queue for sending notifications to Slack
     const slackQueue = this.slack();
@@ -77,14 +77,14 @@ export default class Cdk1Stack extends cdk.Stack {
       domainName: envVar('DOMAIN_NAME'),
       defaultIndex: true,
       redirectWww: true,
-      functionAssociation: {
-        // Enables mappling paths like /privacy to /privacy.html so they can be served from s3
-        function: new cloudfront.Function(this, 'cfFunction', {
-          code: cloudfront.FunctionCode.fromFile({ filePath: './lib/cfFunction.js' }),
-          comment: 'Rewrite URLs to .html and redirect /register, /iphone and /android',
-        }),
-        eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-      },
+      // functionAssociation: {
+      //   // Enables mappling paths like /privacy to /privacy.html so they can be served from s3
+      //   function: new cloudfront.Function(this, 'cfFunction', {
+      //     code: cloudfront.FunctionCode.fromFile({ filePath: './lib/cfFunction.js' }),
+      //     comment: 'Rewrite URLs to .html and redirect /register, /iphone and /android',
+      //   }),
+      //   eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+      // },
     });
 
     // Set up OIDC access from Github Actions - this enables builds to deploy updates to the infrastructure
