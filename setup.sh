@@ -13,6 +13,7 @@ if [ ! -d "$name" ] && [ ! -d ".infrastructure" ]; then
   # Install cdk
   echo "> Install AWS Cloud Development Kit (CDK)"
   npm i -g aws-cdk
+  
 
   # Generate CDK stack
   echo "> Generate $name CDK stack using interim directory name ./$name"
