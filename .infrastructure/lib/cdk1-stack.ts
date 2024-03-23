@@ -8,6 +8,10 @@ import { Function } from 'aws-cdk-lib/aws-lambda';
 import { HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
+
+// added for SSL certificate and perform DNS validation 
+import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
+
 // import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
@@ -22,6 +26,19 @@ export default class Cdk1Stack extends cdk.Stack {
     super(scope, id, props);
 
     // The code that defines your stack goes here
+
+// cc added code
+       // Create hosted zone for sta-labs.com domain
+       const hostedZone = new HostedZone(this, 'StaLabsHostedZone', {
+        zoneName: 'sta-labs.com',
+      });
+// Request SSL certificate and perform DNS validation with the hosted zone
+const certificate = new Certificate(this, 'MyCertificate', {
+  domainName: 'sta-labs.com', // Replace with your domain name
+  validation: CertificateValidation.fromDns(hostedZone), // Perform DNS validation
+});
+// cc added code
+
 
     // This only needs to be created once per account. If you already have one, you can delete this.
 
