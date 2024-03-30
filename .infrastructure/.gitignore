@@ -4,7 +4,7 @@
 node_modules
 !lambda.js
 
-
+# create below file to quickly export aws key and ignore this file
 credentials.sh
 
 # CDK asset staging directory
