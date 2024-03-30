@@ -165,7 +165,7 @@ export default class Cdk1Stack extends cdk.Stack {
         TABLE: aTable.tableName,
       },
       // cchen added handler line
-      handler: 'src/hello.handler', // file is "lambda", function is "handler"
+      handler: 'src/hello.handler', // file is "hello", function is "handler"
       // handler: 'src/lambda.handler', // file is "lambda", function is "handler"
 
       functionProps: {
