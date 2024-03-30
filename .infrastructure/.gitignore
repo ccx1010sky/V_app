@@ -4,6 +4,9 @@
 node_modules
 !lambda.js
 
+
+# credentials.sh
+
 # CDK asset staging directory
 .cdk.staging
 cdk.out

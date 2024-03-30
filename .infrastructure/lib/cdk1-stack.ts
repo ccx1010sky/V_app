@@ -11,7 +11,6 @@ import { Queue } from 'aws-cdk-lib/aws-sqs';
 
 import * as path from 'path';
 
-
 function envVar(name: string, fallback?: string): string {
   const value = process.env[name] || fallback;
   if (!value) throw new Error(`Environment variable ${name} is required`);
@@ -23,7 +22,6 @@ export default class Cdk1Stack extends cdk.Stack {
     super(scope, id, props);
 
     // The code that defines your stack goes here below
-
 
     // This only needs to be created once per account. If you already have one, you can delete this.
 
@@ -167,11 +165,13 @@ export default class Cdk1Stack extends cdk.Stack {
         TABLE: aTable.tableName,
       },
       // cchen added handler line
-      handler: 'src/lambda.handler', // file is "lambda", function is "handler"
+      handler: 'src/hello.handler', // file is "lambda", function is "handler"
+      // handler: 'src/lambda.handler', // file is "lambda", function is "handler"
 
       functionProps: {
         memorySize: 3008,
-        code: Code.fromAsset(path.join(__dirname, './src.zip')),
+        code: Code.fromAsset(path.join(__dirname, '../../api/src.zip')),
+        // code: Code.fromAsset(path.join(__dirname, './src.zip')),
         // code: Code.fromBucket(builds, 'api.zip'), // This can be uncommented once you've run a build of the API code
       },
     });
