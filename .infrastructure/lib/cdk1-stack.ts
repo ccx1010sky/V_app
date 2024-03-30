@@ -4,16 +4,13 @@ import {
   Cognito, BuildsBucket, QueueFunction, WebRoutes, ZipFunction, githubActions,
 } from '@scloud/cdk-patterns';
 import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
-import { Function } from 'aws-cdk-lib/aws-lambda';
+import { Function, Code } from 'aws-cdk-lib/aws-lambda'; // 引入Function针对的代码 WebRoutes.routes(this, 'cloudfront', { '/api/*': api },
 import { HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 
-// added for SSL certificate and perform DNS validation 
-import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
+import * as path from 'path';
 
-// import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 function envVar(name: string, fallback?: string): string {
   const value = process.env[name] || fallback;
@@ -25,19 +22,7 @@ export default class Cdk1Stack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
-
-// cc added code
-       // Create hosted zone for sta-labs.com domain
-       const hostedZone = new HostedZone(this, 'StaLabsHostedZone', {
-        zoneName: 'sta-labs.com',
-      });
-// Request SSL certificate and perform DNS validation with the hosted zone
-const certificate = new Certificate(this, 'MyCertificate', {
-  domainName: 'sta-labs.com', // Replace with your domain name
-  validation: CertificateValidation.fromDns(hostedZone), // Perform DNS validation
-});
-// cc added code
+    // The code that defines your stack goes here below
 
 
     // This only needs to be created once per account. If you already have one, you can delete this.
@@ -47,11 +32,14 @@ const certificate = new Certificate(this, 'MyCertificate', {
 
     // You'll need a zone to create DNS records in. This will need to be referenced by a real domain name so that SSL certificate creation can be authorised.
     // NB the DOMAIN_NAME environment variable is defined in .infrastructure/secrets/domain.sh
+
     const zone = this.zone(envVar('DOMAIN_NAME'), process.env.ZONE_ID);
 
     // A bucket to hold zip files for Lambda functions
     // This is useful because updating a Lambda function in the infrastructure might set the Lambda code to a default placeholder.
     // Having a bucket to store the code in means we can update the Lambda function to use the code, either here in the infrastructure build, or from the Github Actions build.
+
+    // 注解: initial cognito, builds, aBucket, aTable, slackQueue
     const builds = new BuildsBucket(this);
 
     // An optional queue for sending notifications to Slack
@@ -88,7 +76,11 @@ const certificate = new Certificate(this, 'MyCertificate', {
     // * API_LAMBDA - the name of the Lambda function to update when deploying the API
     // * CLOUDFRONT_BUCKET - for uploading the frontend
     // * CLOUDFRONT_DISTRIBUTIONID - for invalidating the Cloudfront cache
+
+    // cchen: initialize the api
     const api = this.api(cognito, builds, aBucket, aTable, slackQueue);
+
+    // cc: webroutes setup
     WebRoutes.routes(this, 'cloudfront', { '/api/*': api }, {
       zone,
       domainName: envVar('DOMAIN_NAME'),
@@ -110,11 +102,13 @@ const certificate = new Certificate(this, 'MyCertificate', {
     githubActions(this).ghaOidcRole({ owner, repo });
   }
 
+  // -----------------------------------------------------
   /**
    * NB: creating a hosted zone is not free. You will be charged $0.50 per month for each hosted zone.
    * @param zoneName The name of the hosted zone - this is assumed to be the same as the domain name and will be used by other constructs (e.g. for SSL certificates),
    * @param zoneId Optional. The ID of an existing hosted zone. If you already have a hosted zone, you can pass the zoneId to this function to get a reference to it, rather than creating a new one.
    */
+  // 重写slack()和cognito()两个方程
   zone(zoneName: string, zoneId?: string): IHostedZone {
     if (zoneId) {
       return HostedZone.fromHostedZoneAttributes(this, 'zone', {
@@ -138,6 +132,7 @@ const certificate = new Certificate(this, 'MyCertificate', {
     return slack.queue;
   }
 
+  // define a cognito function
   cognito(): Cognito {
     // Cognito for authentication
     const stack = cdk.Stack.of(this);
@@ -155,6 +150,7 @@ const certificate = new Certificate(this, 'MyCertificate', {
     // return Cognito.withEmailLogin(this, 'cognito', callbackUrl, undefined, zone);
   }
 
+  // define a api function
   api(
     cognito: Cognito,
     builds: Bucket,
@@ -170,8 +166,12 @@ const certificate = new Certificate(this, 'MyCertificate', {
         BUCKET: aBucket.bucketName,
         TABLE: aTable.tableName,
       },
+      // cchen added handler line
+      handler: 'src/lambda.handler', // file is "lambda", function is "handler"
+
       functionProps: {
         memorySize: 3008,
+        code: Code.fromAsset(path.join(__dirname, './src.zip')),
         // code: Code.fromBucket(builds, 'api.zip'), // This can be uncommented once you've run a build of the API code
       },
     });
@@ -182,4 +182,6 @@ const certificate = new Certificate(this, 'MyCertificate', {
 
     return api;
   }
+
+  //----------------------------------------------------
 }
