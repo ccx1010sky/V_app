@@ -3,10 +3,10 @@ exports.handler = async (event, context) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
     
 
-    
+
     // Return a successful response
     return {
         statusCode: 200,
-        body: JSON.stringify({ message: 'Hello, CChen!' })
+        body: JSON.stringify({ message: 'Hello,STA Chenxi Chen!' })
     };
 };
