@@ -33,7 +33,7 @@ jobs:
     - uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ vars.GHA_OIDC_ROLE }}
-        aws-region: us-east-1
+        aws-region: eu-west-2
 
     - name: Build
       working-directory: ${{ github.workflow }}
