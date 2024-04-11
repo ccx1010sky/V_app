@@ -1,5 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 // https://aws.amazon.com/blogs/mobile/understanding-amazon-cognito-user-pool-oauth-2-0-grants/
+
+// cc: this is Lambda proxy integration to process various event.
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
@@ -15,7 +17,7 @@ async function errorHandler(request: Request, e: Error): Promise<Response> {
   await slackLog(`${e.stack}`);
   return { statusCode: 500, body: { error: `Internal server error: ${request.path}` } };
 }
-
+//cc apiHandler process event,and return the result to handler then pass to ZipFunction
 export async function handler(event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> {
   try {
     const result = await apiHandler(event, context, routes, errorHandler);

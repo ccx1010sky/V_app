@@ -9,7 +9,10 @@ import { HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 
-import * as path from 'path';
+
+import * as path from 'path';// cc: to include the api folder: such as code: Code.fromAsset(path.join(__dirname, '../../api/src/lambda.ts.zip')),
+
+// import * as apigateway from 'aws-cdk-lib/aws-apigateway';//cc
 
 function envVar(name: string, fallback?: string): string {
   const value = process.env[name] || fallback;
@@ -54,12 +57,17 @@ export default class Cdk1Stack extends cdk.Stack {
     // Example DynamoDB table
     const aTable = new Table(this, 'table', {
       billingMode: BillingMode.PAY_PER_REQUEST,
-      partitionKey: {
-        name: 'id',
-        type: AttributeType.STRING,
-      },
+      tableName: 'cc1Table', // Set the table name to 'ccTable'
+      partitionKey: { name: 'itemId', type: AttributeType.STRING }, // cc
       removalPolicy: cdk.RemovalPolicy.DESTROY, // TEMP so you can clean up the stack without resources being left behind
     });
+
+    // cc: Add a sample item to the DynamoDB table below
+    // const sampleItem = {
+    //   itemId: '1',
+    //   itemName: 'Sample Item',
+    //   itemDescription: 'This is a c_chen item in MyTable.',
+    // };
 
     // Example Github Actions variables
     // NB the scloud constructs will create most of the variables you need automatically
@@ -106,7 +114,7 @@ export default class Cdk1Stack extends cdk.Stack {
    * @param zoneName The name of the hosted zone - this is assumed to be the same as the domain name and will be used by other constructs (e.g. for SSL certificates),
    * @param zoneId Optional. The ID of an existing hosted zone. If you already have a hosted zone, you can pass the zoneId to this function to get a reference to it, rather than creating a new one.
    */
-  // 重写slack()和cognito()两个方程
+  // rewrite  a zone function
   zone(zoneName: string, zoneId?: string): IHostedZone {
     if (zoneId) {
       return HostedZone.fromHostedZoneAttributes(this, 'zone', {
@@ -121,6 +129,7 @@ export default class Cdk1Stack extends cdk.Stack {
     });
   }
 
+  // rewrite a slack function
   slack(): Queue {
     const slack = QueueFunction.node(this, 'slack', {
       environment: {
@@ -130,7 +139,7 @@ export default class Cdk1Stack extends cdk.Stack {
     return slack.queue;
   }
 
-  // define a cognito function
+  // cc rewrite a cognito function
   cognito(): Cognito {
     // Cognito for authentication
     const stack = cdk.Stack.of(this);
@@ -148,7 +157,7 @@ export default class Cdk1Stack extends cdk.Stack {
     // return Cognito.withEmailLogin(this, 'cognito', callbackUrl, undefined, zone);
   }
 
-  // define a api function
+  // cc define a api function
   api(
     cognito: Cognito,
     builds: Bucket,
@@ -156,25 +165,29 @@ export default class Cdk1Stack extends cdk.Stack {
     aTable: Table,
     slackQueue: Queue,
   ): Function {
+    //* ***** */
     // Lambda for the Node API
     const api = ZipFunction.node(this, 'api', {
       environment: {
         SIGNIN_URL: cognito.signInUrl(),
         SLACK_QUEUE_URL: slackQueue.queueUrl,
         BUCKET: aBucket.bucketName,
-        TABLE: aTable.tableName,
+        // TABLE: aTable.tableName,//cc
+        TABLE_NAME: aTable.tableName, // cc
+        PRIMARY_KEY: 'itemId', // cc
       },
       // cchen added handler line
-      handler: 'src/hello.handler', // file is "hello", function is "handler"
+      handler: 'src/hello.handler', // file is "", function is "handler"
       // handler: 'src/lambda.handler', // file is "lambda", function is "handler"
 
       functionProps: {
         memorySize: 3008,
-        code: Code.fromAsset(path.join(__dirname, '../../api/src.zip')),
+        code: Code.fromAsset(path.join(__dirname, '../../api/src/lambda.ts.zip')),
         // code: Code.fromAsset(path.join(__dirname, './src.zip')),
         // code: Code.fromBucket(builds, 'api.zip'), // This can be uncommented once you've run a build of the API code
       },
     });
+    //* ****** */
 
     aBucket.grantReadWrite(api);
     aTable.grantReadWriteData(api);
