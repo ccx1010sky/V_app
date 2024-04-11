@@ -178,11 +178,11 @@ export default class Cdk1Stack extends cdk.Stack {
         // sortKey: 'date',
       },
       // cc: handler
-      handler: 'proxy/lambda.handler', // file is "lambda", function is "handler"
+      handler: 'src/lambda.handler', // file is "lambda", function is "handler"
 
       functionProps: {
         memorySize: 3008,
-        code: Code.fromAsset(path.join(__dirname, '../../api/proxy')),
+        code: Code.fromAsset(path.join(__dirname, '../../api/src')),
 
         // code: Code.fromAsset(path.join(__dirname, './src.zip')),
         // code: Code.fromBucket(builds, 'api.zip'), // This can be uncommented once you've run a build of the API code
