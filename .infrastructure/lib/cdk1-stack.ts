@@ -58,7 +58,7 @@ export default class Cdk1Stack extends cdk.Stack {
       billingMode: BillingMode.PAY_PER_REQUEST,
       tableName: 'cc1Table', // Set the table name to 'ccTable'
       partitionKey: { name: 'itemId', type: AttributeType.STRING }, // cc
-      sortKey: { name: 'date', type: AttributeType.STRING }, //cc
+      sortKey: { name: 'date', type: AttributeType.STRING }, // cc
       removalPolicy: cdk.RemovalPolicy.DESTROY, // TEMP so you can clean up the stack without resources being left behind
     });
 
@@ -172,9 +172,10 @@ export default class Cdk1Stack extends cdk.Stack {
         SIGNIN_URL: cognito.signInUrl(),
         SLACK_QUEUE_URL: slackQueue.queueUrl,
         BUCKET: aBucket.bucketName,
-        // TABLE: aTable.tableName,//cc
+
         // TABLE_NAME: aTable.tableName, // cc
         // PRIMARY_KEY: 'itemId', // cc
+        // sortKey: 'date',
       },
       // cc: handler
       handler: 'proxy/lambda.handler', // file is "lambda", function is "handler"
@@ -182,7 +183,6 @@ export default class Cdk1Stack extends cdk.Stack {
       functionProps: {
         memorySize: 3008,
         code: Code.fromAsset(path.join(__dirname, '../../api/proxy')),
-
 
         // code: Code.fromAsset(path.join(__dirname, './src.zip')),
         // code: Code.fromBucket(builds, 'api.zip'), // This can be uncommented once you've run a build of the API code
