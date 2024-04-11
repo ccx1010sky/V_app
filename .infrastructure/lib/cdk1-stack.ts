@@ -9,7 +9,6 @@ import { HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 
-
 import * as path from 'path';// cc: to include the api folder: such as code: Code.fromAsset(path.join(__dirname, '../../api/src/lambda.ts.zip')),
 
 // import * as apigateway from 'aws-cdk-lib/aws-apigateway';//cc
@@ -182,7 +181,7 @@ export default class Cdk1Stack extends cdk.Stack {
 
       functionProps: {
         memorySize: 3008,
-        code: Code.fromAsset(path.join(__dirname, '../../api/src/lambda.ts.zip')),
+        code: Code.fromAsset(path.join(__dirname, '../../api/src')),
         // code: Code.fromAsset(path.join(__dirname, './src.zip')),
         // code: Code.fromBucket(builds, 'api.zip'), // This can be uncommented once you've run a build of the API code
       },

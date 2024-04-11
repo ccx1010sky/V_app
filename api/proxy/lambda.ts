@@ -10,8 +10,8 @@ import {
 import { apiHandler } from '@scloud/lambda-api';
 import { Request, Response } from '@scloud/lambda-api/dist/types';
 import { webappLocal } from '@scloud/lambda-local';
-import routes from './routes';
-import { slackLog } from './helpers/slack';
+import routes from '../src/routes';
+import { slackLog } from '../src/helpers/slack';
 
 async function errorHandler(request: Request, e: Error): Promise<Response> {
   await slackLog(`${e.stack}`);
