@@ -182,7 +182,7 @@ export default class Cdk1Stack extends cdk.Stack {
 
       functionProps: {
         memorySize: 3008,
-        code: Code.fromAsset(path.join(__dirname, '../../api/src')),
+        code: Code.fromAsset(path.join(__dirname, '../../api/src/lambda.ts.zip')),
 
         // code: Code.fromAsset(path.join(__dirname, './src.zip')),
         // code: Code.fromBucket(builds, 'api.zip'), // This can be uncommented once you've run a build of the API code
