@@ -58,6 +58,7 @@ export default class Cdk1Stack extends cdk.Stack {
       billingMode: BillingMode.PAY_PER_REQUEST,
       tableName: 'cc1Table', // Set the table name to 'ccTable'
       partitionKey: { name: 'itemId', type: AttributeType.STRING }, // cc
+      sortKey: { name: 'date', type: AttributeType.STRING }, //cc
       removalPolicy: cdk.RemovalPolicy.DESTROY, // TEMP so you can clean up the stack without resources being left behind
     });
 
@@ -172,12 +173,11 @@ export default class Cdk1Stack extends cdk.Stack {
         SLACK_QUEUE_URL: slackQueue.queueUrl,
         BUCKET: aBucket.bucketName,
         // TABLE: aTable.tableName,//cc
-        TABLE_NAME: aTable.tableName, // cc
-        PRIMARY_KEY: 'itemId', // cc
+        // TABLE_NAME: aTable.tableName, // cc
+        // PRIMARY_KEY: 'itemId', // cc
       },
-      // cchen added handler line
-      handler: 'src/hello.handler', // file is "", function is "handler"
-      // handler: 'src/lambda.handler', // file is "lambda", function is "handler"
+      // cc: handler
+      handler: 'proxy/lambda.handler', // file is "lambda", function is "handler"
 
       functionProps: {
         memorySize: 3008,
