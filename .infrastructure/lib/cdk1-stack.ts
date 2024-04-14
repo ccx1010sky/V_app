@@ -128,7 +128,6 @@ export default class Cdk1Stack extends cdk.Stack {
       zoneName,
     });
   }
-
   // rewrite a slack function
   slack(): Queue {
     const slack = QueueFunction.node(this, 'slack', {
