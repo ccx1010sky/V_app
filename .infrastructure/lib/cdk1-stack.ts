@@ -172,10 +172,6 @@ export default class Cdk1Stack extends cdk.Stack {
         SIGNIN_URL: cognito.signInUrl(),
         SLACK_QUEUE_URL: slackQueue.queueUrl,
         BUCKET: aBucket.bucketName,
-
-        // TABLE_NAME: aTable.tableName, // cc
-        // PRIMARY_KEY: 'itemId', // cc
-        // sortKey: 'date',
       },
       // cc: handler
       handler: 'src/lambda.handler', // file is "lambda", function is "handler"
