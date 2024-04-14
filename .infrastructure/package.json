@@ -9,7 +9,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "lint": "eslint --fix -c ts bin lib",
+    "lint": "eslint --fix --ext ts bin lib",
     "secrets": "ts-node github.ts"
   },
   "devDependencies": {
