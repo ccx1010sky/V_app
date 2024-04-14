@@ -18,7 +18,7 @@ export async function ping(request: Request): Promise<Response> {
   console.log('ping', request.query);
 
 
-  //test api.yml
+  //test1 api.yml
   // Retrieve item from DynamoDB
   try {
     const { itemId } = request.query; // Assuming itemId is present in the request query
